@@ -1,10 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Replicate from 'replicate';
 
-// Initialize Replicate client
-const replicate = new Replicate({
-  auth: process.env.REPLICATE_API_TOKEN,
-});
+/**
+ * API Route for AI image generation across three parallel timelines.
+ * Uses FLUX Schnell model via Replicate for fast, high-quality generations.
+ *
+ * @route POST /api/generate - Generate single world image
+ * @route PUT /api/generate - Generate all three worlds in parallel
+ */
+
+// Initialize Replicate client with error handling
+const getReplicateClient = () => {
+  if (!process.env.REPLICATE_API_TOKEN) {
+    return null;
+  }
+  return new Replicate({
+    auth: process.env.REPLICATE_API_TOKEN,
+  });
+};
+
+const MAX_PROMPT_LENGTH = 1000;
+const ALLOWED_WORLDS = ['happened', 'couldHave', 'shouldHave'] as const;
+type WorldKey = typeof ALLOWED_WORLDS[number];
 
 // Style modifiers for the three parallel worlds
 const worldStyles = {
@@ -27,16 +44,42 @@ const worldStyles = {
 
 export async function POST(request: NextRequest) {
   try {
-    const { prompt, world } = await request.json();
+    const body = await request.json().catch(() => null);
 
-    if (!prompt) {
+    if (!body) {
       return NextResponse.json(
-        { error: 'Prompt is required' },
+        { error: 'Invalid JSON body' },
         { status: 400 }
       );
     }
 
-    if (!process.env.REPLICATE_API_TOKEN) {
+    const { prompt, world } = body;
+
+    // Validate prompt
+    if (!prompt || typeof prompt !== 'string') {
+      return NextResponse.json(
+        { error: 'Prompt is required and must be a string' },
+        { status: 400 }
+      );
+    }
+
+    if (prompt.length > MAX_PROMPT_LENGTH) {
+      return NextResponse.json(
+        { error: `Prompt must be ${MAX_PROMPT_LENGTH} characters or less` },
+        { status: 400 }
+      );
+    }
+
+    // Validate world if provided
+    if (world && !ALLOWED_WORLDS.includes(world as WorldKey)) {
+      return NextResponse.json(
+        { error: `Invalid world. Must be one of: ${ALLOWED_WORLDS.join(', ')}` },
+        { status: 400 }
+      );
+    }
+
+    const replicate = getReplicateClient();
+    if (!replicate) {
       // Return placeholder for demo mode
       return NextResponse.json({
         success: true,
@@ -79,26 +122,64 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Generation error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+    // Handle specific Replicate errors
+    if (errorMessage.includes('rate limit')) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please try again later.' },
+        { status: 429 }
+      );
+    }
+
+    if (errorMessage.includes('authentication') || errorMessage.includes('unauthorized')) {
+      return NextResponse.json(
+        { error: 'API authentication failed' },
+        { status: 401 }
+      );
+    }
+
     return NextResponse.json(
-      { error: 'Failed to generate image' },
+      { error: 'Failed to generate image. Please try again.' },
       { status: 500 }
     );
   }
 }
 
-// Generate all three worlds in parallel
+/**
+ * Generate images for all three parallel worlds simultaneously.
+ * Uses Promise.all for parallel execution with individual error handling.
+ */
 export async function PUT(request: NextRequest) {
   try {
-    const { prompt } = await request.json();
+    const body = await request.json().catch(() => null);
 
-    if (!prompt) {
+    if (!body) {
       return NextResponse.json(
-        { error: 'Prompt is required' },
+        { error: 'Invalid JSON body' },
         { status: 400 }
       );
     }
 
-    if (!process.env.REPLICATE_API_TOKEN) {
+    const { prompt } = body;
+
+    // Validate prompt
+    if (!prompt || typeof prompt !== 'string') {
+      return NextResponse.json(
+        { error: 'Prompt is required and must be a string' },
+        { status: 400 }
+      );
+    }
+
+    if (prompt.length > MAX_PROMPT_LENGTH) {
+      return NextResponse.json(
+        { error: `Prompt must be ${MAX_PROMPT_LENGTH} characters or less` },
+        { status: 400 }
+      );
+    }
+
+    const replicate = getReplicateClient();
+    if (!replicate) {
       // Demo mode - return placeholders
       return NextResponse.json({
         success: true,
@@ -150,8 +231,24 @@ export async function PUT(request: NextRequest) {
 
   } catch (error) {
     console.error('Generation error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+    if (errorMessage.includes('rate limit')) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please try again later.' },
+        { status: 429 }
+      );
+    }
+
+    if (errorMessage.includes('authentication') || errorMessage.includes('unauthorized')) {
+      return NextResponse.json(
+        { error: 'API authentication failed' },
+        { status: 401 }
+      );
+    }
+
     return NextResponse.json(
-      { error: 'Failed to generate images' },
+      { error: 'Failed to generate images. Please try again.' },
       { status: 500 }
     );
   }
