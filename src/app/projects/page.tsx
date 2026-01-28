@@ -1,15 +1,23 @@
 'use client';
 
+import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import Navigation from '@/components/ui/Navigation';
 import PageTransition from '@/components/ui/PageTransition';
 import GlitchText from '@/components/effects/GlitchText';
-import { projects } from '@/lib/projects';
+import ProjectFilter from '@/components/ui/ProjectFilter';
+import { projects, Project } from '@/lib/projects';
 
 const Scene = dynamic(() => import('@/components/three/Scene'), { ssr: false });
 
 export default function ProjectsPage() {
+  const [filteredProjects, setFilteredProjects] = useState<Project[]>(projects);
+
+  const handleFilterChange = useCallback((filtered: Project[]) => {
+    setFilteredProjects(filtered);
+  }, []);
+
   return (
     <>
       <Scene />
@@ -31,14 +39,33 @@ export default function ProjectsPage() {
               <GlitchText text="All Projects" className="text-glow-amber" />
             </h1>
             <p className="text-[var(--text-secondary)] max-w-2xl mx-auto">
-              A collection of production-grade AI systems, from RAG pipelines to 
+              A collection of production-grade AI systems, from RAG pipelines to
               multi-agent orchestration platforms.
             </p>
           </motion.div>
 
+          {/* Filter Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mb-8"
+          >
+            <ProjectFilter projects={projects} onFilterChange={handleFilterChange} />
+          </motion.div>
+
+          {/* Results count */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-[var(--text-muted)] text-sm font-mono mb-6"
+          >
+            Showing {filteredProjects.length} of {projects.length} projects
+          </motion.p>
+
           {/* Projects Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {projects.map((project, index) => (
+            {filteredProjects.map((project, index) => (
               <motion.article
                 key={project.id}
                 initial={{ opacity: 0, y: 30 }}
