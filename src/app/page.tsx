@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import Navigation from '@/components/ui/Navigation';
 import Hero from '@/components/sections/Hero';
-import Projects from '@/components/sections/Projects';
+import ProjectsGSAP from '@/components/sections/ProjectsGSAP';
 
 // Dynamic import for Three.js scene (client-side only)
 const Scene = dynamic(() => import('@/components/three/Scene'), {
@@ -28,7 +28,7 @@ export default function Home() {
         <Hero />
         
         {/* Projects Section */}
-        <Projects />
+        <ProjectsGSAP />
         
         {/* Footer */}
         <footer className="py-12 px-6 border-t border-[var(--border-subtle)]">
