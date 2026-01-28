@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import Navigation from '@/components/ui/Navigation';
+import PageTransition from '@/components/ui/PageTransition';
 import GlitchText from '@/components/effects/GlitchText';
 import { projects } from '@/lib/projects';
 
@@ -13,8 +14,9 @@ export default function ProjectsPage() {
     <>
       <Scene />
       <Navigation />
-      
-      <main className="min-h-screen pt-24 pb-16 px-6">
+
+      <PageTransition>
+        <main className="min-h-screen pt-24 pb-16 px-6">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <motion.div
@@ -119,7 +121,8 @@ export default function ProjectsPage() {
             ))}
           </div>
         </div>
-      </main>
+        </main>
+      </PageTransition>
     </>
   );
 }
