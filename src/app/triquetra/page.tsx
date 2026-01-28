@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import Navigation from '@/components/ui/Navigation';
 import GlitchText from '@/components/effects/GlitchText';
+import SkeletonLoader, { worldConfigs } from '@/components/ui/SkeletonLoader';
 import Image from 'next/image';
 
 const Scene = dynamic(() => import('@/components/three/Scene'), { ssr: false });
@@ -167,9 +168,30 @@ export default function TriquetraPage() {
             )}
           </AnimatePresence>
 
+          {/* Skeleton Loaders during generation */}
+          <AnimatePresence>
+            {isGenerating && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="grid grid-cols-1 md:grid-cols-3 gap-6"
+              >
+                {worldConfigs.map((config, index) => (
+                  <SkeletonLoader
+                    key={config.worldName}
+                    worldName={config.worldName}
+                    color={config.color}
+                    delay={index * 0.15}
+                  />
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Results Grid */}
           <AnimatePresence>
-            {results.length > 0 && (
+            {!isGenerating && results.length > 0 && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
