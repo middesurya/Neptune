@@ -1,23 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Replicate from 'replicate';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 /**
  * API Route for AI image generation across three parallel timelines.
- * Uses FLUX Schnell model via Replicate for fast, high-quality generations.
+ * Uses Gemini 2.5 Flash Image (Nano Banana) for image generation.
  *
  * @route POST /api/generate - Generate single world image
  * @route PUT /api/generate - Generate all three worlds in parallel
  */
-
-// Initialize Replicate client with error handling
-const getReplicateClient = () => {
-  if (!process.env.REPLICATE_API_TOKEN) {
-    return null;
-  }
-  return new Replicate({
-    auth: process.env.REPLICATE_API_TOKEN,
-  });
-};
 
 const MAX_PROMPT_LENGTH = 1000;
 const ALLOWED_WORLDS = ['happened', 'couldHave', 'shouldHave'] as const;
@@ -41,6 +31,35 @@ const worldStyles = {
     color: '#FFD700'
   }
 };
+
+// Generate image using Gemini 2.5 Flash Image model
+async function generateImage(genAI: GoogleGenerativeAI, prompt: string): Promise<string> {
+  // Use gemini-2.5-flash-image (Nano Banana) for image generation
+  const model = genAI.getGenerativeModel({ 
+    model: "gemini-2.5-flash-image",
+    generationConfig: {
+      // @ts-expect-error - responseModalities is valid but not in types
+      responseModalities: ["image", "text"],
+    },
+  });
+  
+  const result = await model.generateContent(`Generate an image: ${prompt}`);
+  const response = result.response;
+  
+  // Check for image in the response
+  const parts = response.candidates?.[0]?.content?.parts || [];
+  
+  for (const part of parts) {
+    // @ts-expect-error - inlineData exists on image parts
+    if (part.inlineData) {
+      // @ts-expect-error - accessing inlineData properties
+      const { mimeType, data } = part.inlineData;
+      return `data:${mimeType};base64,${data}`;
+    }
+  }
+  
+  throw new Error('No image generated in response');
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -78,8 +97,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const replicate = getReplicateClient();
-    if (!replicate) {
+    const apiKey = process.env.GOOGLE_AI_API_KEY;
+    if (!apiKey) {
       // Return placeholder for demo mode
       return NextResponse.json({
         success: true,
@@ -90,28 +109,15 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Get world style or default to all three
+    const genAI = new GoogleGenerativeAI(apiKey);
+
+    // Get world style or default
     const style = world ? worldStyles[world as keyof typeof worldStyles] : null;
     const fullPrompt = style 
       ? `${prompt}${style.suffix}`
       : prompt;
 
-    // Run FLUX Schnell (fast and cheap)
-    const output = await replicate.run(
-      "black-forest-labs/flux-schnell",
-      {
-        input: {
-          prompt: fullPrompt,
-          num_outputs: 1,
-          aspect_ratio: "1:1",
-          output_format: "webp",
-          output_quality: 90,
-        }
-      }
-    );
-
-    // FLUX returns an array of URLs
-    const imageUrl = Array.isArray(output) ? output[0] : output;
+    const imageUrl = await generateImage(genAI, fullPrompt);
 
     return NextResponse.json({
       success: true,
@@ -124,15 +130,14 @@ export async function POST(request: NextRequest) {
     console.error('Generation error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
-    // Handle specific Replicate errors
-    if (errorMessage.includes('rate limit')) {
+    if (errorMessage.includes('quota') || errorMessage.includes('rate') || errorMessage.includes('429') || errorMessage.includes('RESOURCE_EXHAUSTED')) {
       return NextResponse.json(
         { error: 'Rate limit exceeded. Please try again later.' },
         { status: 429 }
       );
     }
 
-    if (errorMessage.includes('authentication') || errorMessage.includes('unauthorized')) {
+    if (errorMessage.includes('API key') || errorMessage.includes('401') || errorMessage.includes('403')) {
       return NextResponse.json(
         { error: 'API authentication failed' },
         { status: 401 }
@@ -140,15 +145,15 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: 'Failed to generate image. Please try again.' },
+      { error: `Failed to generate image: ${errorMessage}` },
       { status: 500 }
     );
   }
 }
 
 /**
- * Generate images for all three parallel worlds simultaneously.
- * Uses Promise.all for parallel execution with individual error handling.
+ * Generate images for all three parallel worlds.
+ * Generates sequentially with delays to avoid rate limits.
  */
 export async function PUT(request: NextRequest) {
   try {
@@ -178,8 +183,8 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const replicate = getReplicateClient();
-    if (!replicate) {
+    const apiKey = process.env.GOOGLE_AI_API_KEY;
+    if (!apiKey) {
       // Demo mode - return placeholders
       return NextResponse.json({
         success: true,
@@ -194,53 +199,56 @@ export async function PUT(request: NextRequest) {
       });
     }
 
-    // Generate all three in parallel
-    const generations = await Promise.all(
-      Object.entries(worldStyles).map(async ([key, style]) => {
-        const fullPrompt = `${prompt}${style.suffix}`;
-        
-        const output = await replicate.run(
-          "black-forest-labs/flux-schnell",
-          {
-            input: {
-              prompt: fullPrompt,
-              num_outputs: 1,
-              aspect_ratio: "1:1",
-              output_format: "webp",
-              output_quality: 90,
-            }
-          }
-        );
+    const genAI = new GoogleGenerativeAI(apiKey);
 
-        const imageUrl = Array.isArray(output) ? output[0] : output;
-
-        return {
+    // Generate all three sequentially to avoid rate limits
+    const results = [];
+    for (const [key, style] of Object.entries(worldStyles)) {
+      const fullPrompt = `${prompt}${style.suffix}`;
+      
+      try {
+        const imageUrl = await generateImage(genAI, fullPrompt);
+        results.push({
           world: key,
           name: style.name,
           color: style.color,
           image: imageUrl,
           prompt: fullPrompt
-        };
-      })
-    );
+        });
+      } catch (err) {
+        console.error(`Failed to generate ${key}:`, err);
+        // Use a placeholder for failed generations
+        results.push({
+          world: key,
+          name: style.name,
+          color: style.color,
+          image: `https://placehold.co/1024x1024/0a0a12/${style.color.slice(1)}?text=${encodeURIComponent('Generation Failed')}`,
+          prompt: fullPrompt,
+          error: true
+        });
+      }
+      
+      // Delay between generations to avoid rate limits
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
 
     return NextResponse.json({
       success: true,
-      results: generations
+      results
     });
 
   } catch (error) {
     console.error('Generation error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
-    if (errorMessage.includes('rate limit')) {
+    if (errorMessage.includes('quota') || errorMessage.includes('rate') || errorMessage.includes('429') || errorMessage.includes('RESOURCE_EXHAUSTED')) {
       return NextResponse.json(
         { error: 'Rate limit exceeded. Please try again later.' },
         { status: 429 }
       );
     }
 
-    if (errorMessage.includes('authentication') || errorMessage.includes('unauthorized')) {
+    if (errorMessage.includes('API key') || errorMessage.includes('401') || errorMessage.includes('403')) {
       return NextResponse.json(
         { error: 'API authentication failed' },
         { status: 401 }

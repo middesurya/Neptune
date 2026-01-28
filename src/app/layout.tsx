@@ -115,9 +115,37 @@ export default function RootLayout({
     <html lang="en" className="dark" suppressHydrationWarning>
       <head>
         <HomePageJsonLd />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('neptune-theme');
+                  if (!theme) {
+                    theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                  }
+                  var d = document.documentElement;
+                  d.classList.remove('dark', 'light');
+                  d.classList.add(theme);
+                  if (theme === 'light') {
+                    d.style.setProperty('--bg-primary', '#f5f5f7');
+                    d.style.setProperty('--bg-elevated', '#ffffff');
+                    d.style.setProperty('--bg-surface', '#e8e8ec');
+                    d.style.setProperty('--bg-card', '#ffffff');
+                    d.style.setProperty('--text-primary', '#0a0a12');
+                    d.style.setProperty('--text-secondary', '#404050');
+                    d.style.setProperty('--text-muted', '#808090');
+                    d.style.setProperty('--border-subtle', 'rgba(0, 0, 0, 0.08)');
+                  }
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
       </head>
       <body
         className={`${orbitron.variable} ${spaceMono.variable} antialiased scanlines grain`}
+        suppressHydrationWarning
       >
         <ThemeProvider>
           <SkipToContent />
