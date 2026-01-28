@@ -1,0 +1,26 @@
+{
+  "name": "Neptune | Surya Midde",
+  "short_name": "Neptune",
+  "description": "Dark sci-fi AI portfolio showcasing RAG pipelines, multi-agent systems, and LLM applications",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a12",
+  "theme_color": "#C9A227",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

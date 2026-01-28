@@ -1,0 +1,31 @@
+<svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="amberGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d4a929"/>
+      <stop offset="100%" stop-color="#C9A227"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="180" height="180" rx="20" fill="#0a0a12"/>
+  <rect x="2" y="2" width="176" height="176" rx="18" fill="none" stroke="url(#amberGradient)" stroke-width="1" opacity="0.3"/>
+
+  <!-- Triquetra symbol centered -->
+  <g transform="translate(90, 90)" fill="none" stroke="url(#amberGradient)" stroke-width="4" stroke-linecap="round" filter="url(#glow)">
+    <!-- Top loop -->
+    <path d="M0 -32 Q22 -12, 0 0 Q-22 -12, 0 -32"/>
+    <!-- Right loop -->
+    <path d="M0 0 Q22 18, 35 0 Q22 -18, 0 0"/>
+    <!-- Left loop -->
+    <path d="M0 0 Q-22 18, -35 0 Q-22 -18, 0 0"/>
+    <!-- Center circle -->
+    <circle cx="0" cy="0" r="10" stroke-width="3"/>
+  </g>
+</svg>
