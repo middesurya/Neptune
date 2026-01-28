@@ -1,5 +1,12 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { Orbitron, Space_Mono } from "next/font/google";
+import ErrorBoundary from "@/components/ui/ErrorBoundary";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { HomePageJsonLd } from "@/components/seo/JsonLd";
+import { SkipToContent } from "@/hooks/useKeyboardNavigation";
+import GlobalEnhancements from "@/components/ui/GlobalEnhancements";
 import "./globals.css";
 
 const orbitron = Orbitron({
@@ -105,11 +112,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark" suppressHydrationWarning>
+      <head>
+        <HomePageJsonLd />
+      </head>
       <body
         className={`${orbitron.variable} ${spaceMono.variable} antialiased scanlines grain`}
       >
-        {children}
+        <ThemeProvider>
+          <SkipToContent />
+          <ErrorBoundary>
+            <Suspense
+              fallback={
+                <div className="min-h-screen flex items-center justify-center bg-[var(--bg-primary)]">
+                  <LoadingSpinner size="lg" message="Initializing..." />
+                </div>
+              }
+            >
+              {children}
+            </Suspense>
+          </ErrorBoundary>
+          <GlobalEnhancements />
+        </ThemeProvider>
       </body>
     </html>
   );

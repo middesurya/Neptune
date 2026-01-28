@@ -4,13 +4,42 @@ import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
+/**
+ * Props for the ParticleField component.
+ */
 interface ParticleFieldProps {
+  /** Number of particles to render (default: 2000) */
   count?: number;
+  /** Particle color in hex format (default: '#C9A227') */
   color?: string;
+  /** Particle size in world units (default: 0.015) */
   size?: number;
+  /** Base velocity multiplier for particle movement (default: 0.0003) */
   speed?: number;
 }
 
+/**
+ * GPU-optimized 3D particle field using Three.js BufferGeometry.
+ *
+ * Creates an ambient particle system with:
+ * - Random initial positions in a 20x20x20 unit space
+ * - Continuous drift motion with individual velocities
+ * - Subtle sine-wave vertical oscillation
+ * - Boundary wrapping to keep particles in view
+ * - Slow overall rotation for depth perception
+ * - Additive blending for glowing effect
+ *
+ * Performance optimizations:
+ * - Uses BufferGeometry for efficient GPU rendering
+ * - Calculates velocities once in useMemo
+ * - Updates position buffer directly each frame
+ * - Disables depth writing for transparent rendering
+ *
+ * @example
+ * ```tsx
+ * <ParticleField count={1500} color="#C9A227" size={0.012} speed={0.0002} />
+ * ```
+ */
 export default function ParticleField({ 
   count = 2000, 
   color = '#C9A227',

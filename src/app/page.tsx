@@ -23,18 +23,22 @@ export default function Home() {
       <Navigation />
       
       {/* Main Content */}
-      <main>
+      <main id="main-content">
         {/* Hero Section */}
-        <Hero />
-        
+        <section id="hero">
+          <Hero />
+        </section>
+
         {/* Projects Section */}
-        <ProjectsGSAP />
+        <section id="projects">
+          <ProjectsGSAP />
+        </section>
         
         {/* Footer */}
         <footer className="py-12 px-6 border-t border-[var(--border-subtle)]">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-[var(--text-muted)] text-sm font-mono">
-              © 2025 Surya Midde. All timelines reserved.
+              © {new Date().getFullYear()} Surya Midde. All timelines reserved.
             </p>
             <div className="flex items-center gap-6">
               <a

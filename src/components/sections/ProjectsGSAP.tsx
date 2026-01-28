@@ -6,11 +6,32 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { projects } from '@/lib/projects';
 import GlitchText from '../effects/GlitchText';
 
-// Register ScrollTrigger plugin
+// Register ScrollTrigger plugin for client-side only
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+/**
+ * Featured projects section with GSAP ScrollTrigger animations.
+ *
+ * Animation features:
+ * - Header fade-in with vertical slide
+ * - Decorative line scale animation
+ * - Alternating card entrance (left/right with subtle 3D rotation)
+ * - Parallax scroll effect on cards
+ * - Staggered tech badge animations with bounce
+ * - List item slide-in animations
+ *
+ * Performance considerations:
+ * - Uses GSAP context for proper cleanup on unmount
+ * - ScrollTrigger instances are automatically managed
+ * - Animations are reversible for smooth scroll navigation
+ *
+ * @example
+ * ```tsx
+ * <ProjectsGSAP />
+ * ```
+ */
 export default function ProjectsGSAP() {
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);

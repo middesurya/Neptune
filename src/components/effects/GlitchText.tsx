@@ -3,6 +3,9 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
+/**
+ * Props for the GlitchText component.
+ */
 interface GlitchTextProps {
   text: string;
   className?: string;
@@ -12,9 +15,31 @@ interface GlitchTextProps {
   glitchInterval?: number;
 }
 
-export default function GlitchText({ 
-  text, 
-  className = '', 
+/**
+ * Animated glitch text effect with character scrambling and chromatic aberration.
+ *
+ * Features:
+ * - Character-by-character scramble animation using random glitch characters
+ * - Chromatic aberration effect with cyan/amber color split
+ * - Horizontal shake animation during glitch
+ * - Supports both hover-triggered and automatic periodic glitching
+ * - Progressive character reveal (typewriter-like resolution)
+ *
+ * @param text - The text content to display
+ * @param className - Additional CSS classes
+ * @param as - HTML tag to render (default: 'span')
+ * @param glitchOnHover - Enable glitch on mouse hover (default: true)
+ * @param autoGlitch - Enable automatic periodic glitching (default: false)
+ * @param glitchInterval - Interval in ms between auto-glitches (default: 5000)
+ *
+ * @example
+ * ```tsx
+ * <GlitchText text="NEPTUNE" autoGlitch glitchInterval={8000} />
+ * ```
+ */
+export default function GlitchText({
+  text,
+  className = '',
   as: Tag = 'span',
   glitchOnHover = true,
   autoGlitch = false,

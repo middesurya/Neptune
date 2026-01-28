@@ -4,6 +4,21 @@ import { motion } from 'framer-motion';
 import GlitchText from '../effects/GlitchText';
 import Link from 'next/link';
 
+/**
+ * Hero section component for the homepage.
+ *
+ * Features:
+ * - Animated Triquetra symbol with continuous rotation
+ * - GlitchText effect on name with periodic auto-glitch
+ * - Staggered entrance animations using Framer Motion
+ * - Gradient overlay for smooth transition to content below
+ * - Animated scroll indicator
+ *
+ * @example
+ * ```tsx
+ * <Hero />
+ * ```
+ */
 export default function Hero() {
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center px-6">
