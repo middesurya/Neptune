@@ -35,7 +35,7 @@ if (typeof window !== 'undefined') {
 export default function ProjectsGSAP() {
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
-  const cardsRef = useRef<HTMLDivElement[]>([]);
+  const cardsRef = useRef<HTMLElement[]>([]);
   const lineRef = useRef<HTMLDivElement>(null);
 
   const featuredProjects = projects.filter(p => p.featured);

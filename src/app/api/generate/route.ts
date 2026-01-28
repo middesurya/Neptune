@@ -38,9 +38,8 @@ async function generateImage(genAI: GoogleGenerativeAI, prompt: string): Promise
   const model = genAI.getGenerativeModel({ 
     model: "gemini-2.5-flash-image",
     generationConfig: {
-      // @ts-expect-error - responseModalities is valid but not in types
       responseModalities: ["image", "text"],
-    },
+    } as Record<string, unknown>,
   });
   
   const result = await model.generateContent(`Generate an image: ${prompt}`);
@@ -50,9 +49,7 @@ async function generateImage(genAI: GoogleGenerativeAI, prompt: string): Promise
   const parts = response.candidates?.[0]?.content?.parts || [];
   
   for (const part of parts) {
-    // @ts-expect-error - inlineData exists on image parts
     if (part.inlineData) {
-      // @ts-expect-error - accessing inlineData properties
       const { mimeType, data } = part.inlineData;
       return `data:${mimeType};base64,${data}`;
     }

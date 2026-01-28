@@ -24,7 +24,7 @@ const pageVariants = {
 
 const pageTransition = {
   duration: 0.4,
-  ease: [0.43, 0.13, 0.23, 0.96],
+  ease: [0.43, 0.13, 0.23, 0.96] as [number, number, number, number],
 };
 
 export default function PageTransition({ children }: PageTransitionProps) {
