@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import Navigation from '@/components/ui/Navigation';
 import GlitchText from '@/components/effects/GlitchText';
+import ContactForm from '@/components/ui/ContactForm';
 import { skills } from '@/lib/projects';
 
 const Scene = dynamic(() => import('@/components/three/Scene'), { ssr: false });
@@ -183,6 +184,7 @@ export default function AboutPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
+            className="mb-12"
           >
             <h2 className="font-[var(--font-orbitron)] text-xl font-semibold text-[var(--accent-amber)] mb-8 text-center">
               Technical Arsenal
@@ -213,6 +215,9 @@ export default function AboutPage() {
               ))}
             </div>
           </motion.div>
+
+          {/* Contact Form */}
+          <ContactForm />
         </div>
       </main>
     </>
