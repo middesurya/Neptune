@@ -13,6 +13,38 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    id: 'mcp-directory',
+    title: 'MCP Directory',
+    tagline: 'The Largest MCP Server Directory',
+    description: 'Built the definitive directory for Model Context Protocol servers with 181+ servers across 22 categories. Features a unique one-click Config Generator that no competitor has.',
+    tech: ['Next.js 15', 'TypeScript', 'Tailwind CSS', 'SQLite', 'Drizzle ORM', 'Vercel'],
+    highlights: [
+      '181 MCP servers indexed (largest directory)',
+      'One-click Config Generator for Claude/Cursor/Windsurf',
+      'Browse by client with instant search + autocomplete',
+      'Dark mode, SEO optimized, mobile responsive'
+    ],
+    liveUrl: 'https://mcp-directory-pi.vercel.app',
+    githubUrl: 'https://github.com/middesurya/mcp-directory',
+    featured: true
+  },
+  {
+    id: 'social-network-bottleneck',
+    title: 'Social Network Bottleneck Detector',
+    tagline: 'Graph Analytics for Twitter Networks',
+    description: 'Detect critical bottleneck nodes in social networks using graph algorithms, Neo4j, and LLM-powered natural language queries. Visualizes network topology with Cytoscape.js.',
+    tech: ['FastAPI', 'Neo4j Aura', 'React', 'Cytoscape.js', 'LangChain', 'GPT-4'],
+    highlights: [
+      'Natural language to Cypher query generation',
+      'Real-time graph visualization',
+      'Betweenness centrality bottleneck detection',
+      'Interactive network exploration'
+    ],
+    liveUrl: 'https://frontend-sigma-eight-20.vercel.app',
+    githubUrl: 'https://github.com/middesurya/social-network-bottleneck-detector',
+    featured: true
+  },
+  {
     id: 'neverafk',
     title: 'NeverAFK.ai',
     tagline: 'RAG-Powered Creator Support Platform',
@@ -25,7 +57,7 @@ export const projects: Project[] = [
       'Lemon Squeezy billing integration'
     ],
     liveUrl: 'https://never-afk-ai-lngm.vercel.app',
-    githubUrl: 'https://github.com/middesurya',
+    githubUrl: 'https://github.com/middesurya/NeverAFK.ai',
     featured: true
   },
   {
@@ -41,8 +73,68 @@ export const projects: Project[] = [
       '80%+ Redis cache hit rate'
     ],
     liveUrl: 'https://llm-council-gules.vercel.app',
-    githubUrl: 'https://github.com/middesurya',
+    githubUrl: 'https://github.com/middesurya/llm-council',
     featured: true
+  },
+  {
+    id: 'the-screening-room',
+    title: 'The Screening Room',
+    tagline: 'AI Critics Only - Movie Debate Platform',
+    description: 'A social platform where AI agents debate movies while humans spectate and vote. Multiple AI personalities with distinct reviewing styles argue film merits.',
+    tech: ['Next.js', 'TypeScript', 'OpenAI', 'Anthropic', 'Tailwind CSS'],
+    highlights: [
+      'Multi-AI debate orchestration',
+      'Distinct AI critic personalities',
+      'Real-time audience voting',
+      'Automated discussion moderation'
+    ],
+    githubUrl: 'https://github.com/middesurya/the-screening-room',
+    featured: false
+  },
+  {
+    id: 'echomirror',
+    title: 'EchoMirror',
+    tagline: 'AI-Powered Self-Reflection Journal',
+    description: 'Mobile journaling app with on-device ML for mood analysis and personalized insights. Built with Flutter and Riverpod for cross-platform deployment.',
+    tech: ['Flutter', 'Dart', 'Riverpod', 'ML Kit', 'Firebase', 'On-Device ML'],
+    highlights: [
+      'On-device sentiment analysis (privacy-first)',
+      'Mood tracking with visual insights',
+      'Cross-platform (iOS + Android)',
+      'Personalized reflection prompts'
+    ],
+    githubUrl: 'https://github.com/middesurya/EchoMirror',
+    featured: false
+  },
+  {
+    id: 'chainmind',
+    title: 'ChainMind',
+    tagline: 'AI-Powered DeFi Intelligence Platform',
+    description: 'Making DeFi risk transparent through AI. Analyzes blockchain protocols, smart contracts, and market data to provide actionable intelligence.',
+    tech: ['TypeScript', 'Next.js', 'Python', 'Web3.js', 'LangChain', 'OpenAI'],
+    highlights: [
+      'Real-time DeFi protocol analysis',
+      'Smart contract risk assessment',
+      'AI-powered market insights',
+      'Multi-chain support'
+    ],
+    githubUrl: 'https://github.com/middesurya/ChainMind',
+    featured: false
+  },
+  {
+    id: 'udemy-notes-extractor',
+    title: 'Udemy Notes Extractor',
+    tagline: 'AI-Powered Course Transcript Tool',
+    description: 'Python CLI that extracts Udemy course transcripts and generates structured study notes using Claude AI. Automates note-taking for online learning.',
+    tech: ['Python', 'Claude API', 'CLI', 'Markdown'],
+    highlights: [
+      'Automated transcript extraction',
+      'Claude-powered note generation',
+      'Structured markdown output',
+      'Batch processing support'
+    ],
+    githubUrl: 'https://github.com/middesurya/udemy-notes-extractor',
+    featured: false
   },
   {
     id: 'agent-eval',
@@ -86,6 +178,20 @@ export const projects: Project[] = [
       'Test harness generation'
     ],
     githubUrl: 'https://github.com/middesurya/Mcp_Gen'
+  },
+  {
+    id: 'atheos',
+    title: 'ÆTHER-Grid',
+    tagline: 'Quantum-Enhanced Energy Grid AI',
+    description: 'Multi-agent system for intelligent energy grid management with quantum-enhanced optimization. EU AI Act compliant with explainable AI features.',
+    tech: ['Python', 'PyTorch', 'Qiskit', 'Multi-Agent Systems', 'Quantum ML'],
+    highlights: [
+      'Quantum optimization algorithms',
+      'Multi-agent coordination',
+      'EU AI Act compliance',
+      'Explainable AI dashboard'
+    ],
+    githubUrl: 'https://github.com/middesurya/Atheos'
   }
 ];
 
